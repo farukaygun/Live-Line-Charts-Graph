@@ -21,12 +21,14 @@ x_queue = Manager().list()
 queue2 = Manager().list()
 x_queue2 = Manager().list()
 
+queue3 = Manager().list()
+x_queue3 = Manager().list()
+
 fig = plt.figure(figsize=(5, 2), dpi=100)
 ax = fig.add_subplot(1, 1, 1 )
 ax.get_xaxis().set_visible(False)
 
 def aaa():
-
     if abc.get() == id1:
         ax.plot(x_queue, queue, color='g', label='Data value', linewidth='1')
     elif abc.get() == id2:
@@ -38,7 +40,7 @@ abc = Tk.Entry(master=root, font=30)
 abc.pack()
 
 id_label.config(font=30)
-abc.place(x=30, y=3)
+abc.place(x=32, y=3)
 id_label.place(x=10, y=3)
 
 for i in range(100):
@@ -65,9 +67,11 @@ def drawPlot():
     global x_queue2
 
     def animate(i):
+
         producer = KafkaProducer(bootstrap_servers='localhost:9092')
         randomData2 = random.randint(1, 100)
         randomData = random.randint(1, 100)
+        randomData3 = random.randint(1, 100)
         
         if abc.get() == id1:
             print(randomData)
@@ -78,11 +82,15 @@ def drawPlot():
             print(randomData2)
             producer.send('queue', json.dumps(randomData2).encode('utf-8'))
             ax.clear()
+        else:
+            randomData3 = 0
+            for i in range(100):
+                producer.send('queue', json.dumps((randomData3)).encode('utf-8'))
 
         aaa()
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.show()
-    canvas.get_tk_widget().pack(side=Tk.BOTTOM, expand=True)
+    canvas.get_tk_widget().pack(side=Tk.BOTTOM,fill=Tk.X, expand=True)
     
     ani = animation.FuncAnimation(fig, animate, interval=1)
     Tk.mainloop()
